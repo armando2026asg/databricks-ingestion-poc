@@ -82,13 +82,48 @@ This allows new sources to be added without changing the ingestion code.
 - Minimal transformation logic in Data Hub
 
 ---
+## How to run: 
 
-## How to Run
+### Prerequisites
 
+- Azure subscription
+- Azure Data Lake Storage Gen2 account
+- Azure Databricks workspace
+
+### Storage Setup
+
+Create the following containers in ADLS Gen2:
+
+- landing
+- raw
+- metadata
+- datahub
+
+### Databricks Setup
+
+1. Import the notebooks into your Databricks workspace:
+   - 00_setup_storage
+   - 01_create_sample_data
+   - 02_create_metadata
+   - 03_ingestion_framework
+   - 04_datahub_load
+
+2. Configure storage access in `00_setup_storage`:
+   - Set your storage account name
+   - Use a storage account key or secret scope
+
+3. Attach a cluster to the notebooks
+
+### Execution
+
+You can run the solution in two ways:
+
+**Option 1 — Manual execution:**
 1. Run `00_setup_storage`
 2. Run `01_create_sample_data`
 3. Run `02_create_metadata`
 4. Run `03_ingestion_framework`
 5. Run `04_datahub_load`
 
-or import the job json in databricks and run the Job
+**Option 2 — Databricks Workflow:**
+- Trigger the configured job to execute the full pipeline automatically
