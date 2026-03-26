@@ -17,6 +17,10 @@
 
 # COMMAND ----------
 
+from pyspark.sql.functions import current_timestamp, lit
+
+# COMMAND ----------
+
 # DBTITLE 1,fetching the metadata 
 metadata_path = "abfss://metadata@armandoingestionpoc.dfs.core.windows.net/ingestion_config"
 
@@ -25,7 +29,7 @@ display(metadata_df)
 
 # COMMAND ----------
 
-from pyspark.sql.functions import current_timestamp, lit
+
 
 # COMMAND ----------
 
@@ -47,7 +51,7 @@ def read_source(file_format, path):
 # Reads raw data dynamically based on metadata and standardizes it into Delta format.
 # This layer applies minimal transformations and adds audit columns.
 
-datahub_base_path = "abfss://raw@armandoingestionpoc.dfs.core.windows.net/datahub"
+datahub_base_path = "abfss://datahub@armandoingestionpoc.dfs.core.windows.net/datahub"
 metadata_rows = metadata_df.collect()
 
 for row in metadata_rows:
@@ -67,7 +71,9 @@ for row in metadata_rows:
 
     target_path = f"{datahub_base_path}/{source_name}"
     
+    #added for the sake of the poc, on productive environements I would rely on the deltalake transaction logs 
     dbutils.fs.rm(target_path, recurse=True)
+    
     df.write.format("delta").mode("overwrite").save(target_path)
 
     print(f"{source_name} loaded successfully.")
@@ -75,8 +81,8 @@ for row in metadata_rows:
 # COMMAND ----------
 
 # DBTITLE 1,validation of results
-customers_datahub_path = "abfss://raw@armandoingestionpoc.dfs.core.windows.net/datahub/customers"
-oders_datahub_path = "abfss://raw@armandoingestionpoc.dfs.core.windows.net/datahub/orders"
+customers_datahub_path = "abfss://datahub@armandoingestionpoc.dfs.core.windows.net/datahub/customers"
+oders_datahub_path = "abfss://datahub@armandoingestionpoc.dfs.core.windows.net/datahub/orders"
 
 orders_dh_df = spark.read.format("delta").load(oders_datahub_path)
 customers_dh_df = spark.read.format("delta").load(customers_datahub_path)
