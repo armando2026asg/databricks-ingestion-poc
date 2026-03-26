@@ -10,11 +10,14 @@
 
 # COMMAND ----------
 
-# DBTITLE 1,Connection to ADLS
 storage_account_name = "armandoingestionpoc"
-storage_account_key = "<AZURE_STORAGE_KEY>"
+
+storage_account_key = dbutils.secrets.get(
+    scope="adls-scope",
+    key="storage-account-key"
+)
 
 spark.conf.set(
-    f"fs.azure.account.key.armandoingestionpoc.dfs.core.windows.net",
+    f"fs.azure.account.key.{storage_account_name}.dfs.core.windows.net",
     storage_account_key
 )
