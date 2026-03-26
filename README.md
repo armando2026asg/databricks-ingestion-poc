@@ -78,10 +78,7 @@ This allows new sources to be added without changing the ingestion code.
 ---
 
 ## Limitations
-
 - Authentication uses storage account keys (simplified for PoC)
-- No orchestration layer (e.g., Azure Data Factory)
-- No incremental or CDC ingestion
 - Minimal transformation logic in Data Hub
 
 ---
@@ -93,3 +90,5 @@ This allows new sources to be added without changing the ingestion code.
 3. Run `02_create_metadata`
 4. Run `03_ingestion_framework`
 5. Run `04_datahub_load`
+
+or import the job json in databricks and run the Job
