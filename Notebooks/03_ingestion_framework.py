@@ -25,27 +25,22 @@ display(metadata_df)
 
 # COMMAND ----------
 
-# DBTITLE 1,writing source data in raw data storage
+
+# Ingestion strategy:
+# The Raw layer stores data exactly as it comes from the source.
+# No transformation is applied here — files are copied as-is to preserve original format.
+
 metadata_rows = metadata_df.collect()
 
 for row in metadata_rows:
     
     source_name = row["source_name"]
-    file_format = row["file_format"]
     source_path = row["source_path"]
     raw_target_path = row["raw_target_path"]
 
-    print(f"Processing {source_name}...")
+    print(f"Copying {source_name} to Raw layer...")
     
-    # Dynamic read
-    if file_format == "csv":
-        df = spark.read.option("header", True).csv(source_path)
-    elif file_format == "json":
-        df = spark.read.json(source_path)
-    else:
-        raise Exception(f"Unsupported format: {file_format}")
-    
-    # Write to raw
-    df.write.mode("overwrite").parquet(raw_target_path)
-    
-    print(f"{source_name} ingested successfully.")
+    dbutils.fs.rm(raw_target_path, recurse=True)
+    dbutils.fs.cp(source_path, raw_target_path, recurse=True)
+
+    print(f"{source_name} copied to Raw successfully.")
